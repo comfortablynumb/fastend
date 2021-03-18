@@ -1,0 +1,67 @@
+{
+  "external_id": "home",
+  "blocks": [
+    {
+      "type": "layout",
+      "sub_type": "normal",
+      "children": [
+        {
+          "type": "menu",
+          "sub_type": "main_menu",
+          "children": [
+            {
+              "type": "image",
+              "url": "http://localhost/myimage.png"
+            },
+            {
+              "type": "button",
+              "action": {
+                "type": "go_to_view",
+                "view": "home"
+              },
+              "i18n": {
+                "en_US": {
+                  "title": "Home"
+                }
+              }
+            },
+            {
+              "type": "submenu",
+              "i18n": {
+                "en_US": {
+                  "title": "Featured"
+                }
+              },
+              "children": [
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "go_to_view",
+                    "view": "navigating_change"
+                  },
+                  "i18n": {
+                    "en_US": {
+                      "title": "Navigating Change"
+                    }
+                  }
+                },
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "go_to_view",
+                    "view": "recommended"
+                  },
+                  "i18n": {
+                    "en_US": {
+                      "title": "Recommended"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

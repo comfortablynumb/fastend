@@ -1,0 +1,19 @@
+{
+  "application": {
+    "external_id": "o-reilly",
+    "i18n": {
+      "en_US": {
+        "name": "O'Reilly"
+      }
+    }
+  },
+  "client": {
+    "external_id": "o-reilly-mobile-app"
+  },
+  "languages": {
+    "en_US": {
+      "name": "English",
+      "default": true
+    }
+  }
+}
