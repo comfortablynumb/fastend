@@ -7,6 +7,10 @@ services:
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
-      KEYCLOAK_IMPORT: /app/resources/initial_data/realm_export.json
+      KEYCLOAK_IMPORT: /app/resources/initial_data/realm-export.json
     volumes:
       - "${PWD}:/app:ro"
+  mongo:
+    image: mongo:4.4.4-bionic
+    ports:
+      - "27017:27017"
