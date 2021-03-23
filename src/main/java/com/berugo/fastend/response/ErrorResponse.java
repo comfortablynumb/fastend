@@ -3,6 +3,7 @@ package com.berugo.fastend.response;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,6 @@ public class ErrorResponse {
 
         private String message;
 
-        private Map<String, Object> data;
+        private Map<String, Object> data = new HashMap<>();
     }
 }
