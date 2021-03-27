@@ -4,6 +4,7 @@ import com.berugo.fastend.model.AbstractModel;
 import com.berugo.fastend.model.Application;
 import com.google.common.base.Strings;
 import lombok.NonNull;
+import org.apache.commons.lang3.LocaleUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -30,7 +31,7 @@ public abstract class AbstractValidator implements Validator, InitializingBean {
 
     protected boolean rejectIfNull(final String field, final Object value, final Errors errors) {
         if (value == null) {
-            errors.rejectValue(field, ERROR_CODE_NOT_NULL, this.getErrorMessageCode(field, ERROR_CODE_NOT_NULL));
+            this.addError(field, ERROR_CODE_NOT_NULL, errors);
 
             return true;
         }
@@ -40,7 +41,7 @@ public abstract class AbstractValidator implements Validator, InitializingBean {
 
     protected boolean rejectIfNullOrEmpty(final String field, final String value, final Errors errors) {
         if (Strings.isNullOrEmpty(value)) {
-            errors.rejectValue(field, ERROR_CODE_NOT_NULL_NOR_EMPTY, this.getErrorMessageCode(field, ERROR_CODE_NOT_NULL_NOR_EMPTY));
+            this.addError(field, ERROR_CODE_NOT_NULL_NOR_EMPTY, errors);
 
             return true;
         }
@@ -50,12 +51,16 @@ public abstract class AbstractValidator implements Validator, InitializingBean {
 
     protected boolean rejectIfNullOrEmpty(final String field, final Map value, final Errors errors) {
         if (value == null || value.size() < 1) {
-            errors.rejectValue(field, ERROR_CODE_NOT_NULL_NOR_EMPTY, this.getErrorMessageCode(field, ERROR_CODE_NOT_NULL_NOR_EMPTY));
+            this.addError(field, ERROR_CODE_NOT_NULL_NOR_EMPTY, errors);
 
             return true;
         }
 
         return false;
+    }
+
+    protected void addError(final String field, final String code, final Errors errors) {
+        errors.rejectValue(field, code, this.getErrorMessageCode(field, code));
     }
 
     protected String getErrorMessageCode(final String field, final String code) {
@@ -66,6 +71,16 @@ public abstract class AbstractValidator implements Validator, InitializingBean {
             .append(".")
             .append(code)
             .toString();
+    }
+
+    protected boolean isValidLocale(final String localeName) {
+        try {
+            LocaleUtils.toLocale(localeName);
+
+            return true;
+        } catch (final IllegalArgumentException e) {
+            return false;
+        }
     }
 
     protected String getEntityName() {

@@ -13,6 +13,8 @@ public class FieldType {
 
     private boolean searchable = false;
 
+    private boolean translatable = false;
+
     private Integer min;
 
     private Integer max;
