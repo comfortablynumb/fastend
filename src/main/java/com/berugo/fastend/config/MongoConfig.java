@@ -13,7 +13,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableMongoAuditing
-@EnableMongoRepositories(basePackages = "com.berugo.fastend.repository")
+@EnableMongoRepositories(basePackages = "com.berugo.fastend.repository.mongo")
 public class MongoConfig extends AbstractMongoClientConfiguration {
     @Value("${mongo.uri}")
     private String mongoConnectionString;

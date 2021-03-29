@@ -1,11 +1,13 @@
 package com.berugo.fastend.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @SuperBuilder
@@ -14,5 +16,8 @@ import java.util.List;
 public class Application extends AbstractModel {
     private String defaultLocale;
 
-    private List<String> availableLocales;
+    @Builder.Default
+    private Set<String> availableLocales = new HashSet<>();
+
+
 }
