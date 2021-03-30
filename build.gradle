@@ -32,9 +32,18 @@ dependencies {
 
 	// Spring related dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// H2
+
+	runtime 'com.h2database:h2'
+
+	// Hibernate Types
+
+	implementation 'com.vladmihalcea:hibernate-types-52:2.10.4'
 
 	// Test + Dev tools
 	compileOnly 'org.projectlombok:lombok'
