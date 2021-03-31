@@ -1,17 +1,17 @@
 package com.berugo.quickend.integration.mongo;
 
-import com.berugo.quickend.integration.AbstractApplicationTests;
-import com.berugo.quickend.repository.mongo.ApplicationRepository;
+import com.berugo.quickend.integration.AbstractClientTests;
+import com.berugo.quickend.repository.mongo.ClientRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("mongo")
-public class MongoApplicationTests extends AbstractApplicationTests {
+public class MongoClientTests extends AbstractClientTests {
 
     @Autowired
-    private ApplicationRepository applicationRepository;
+    private ClientRepository clientRepository;
 
 
     @BeforeAll
@@ -25,6 +25,8 @@ public class MongoApplicationTests extends AbstractApplicationTests {
     }
 
     protected void cleanUp() {
-        this.applicationRepository.deleteAll();
+        this.clientRepository.deleteAll();
+
+
     }
 }

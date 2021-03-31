@@ -22,6 +22,12 @@ public class CreateOrUpdateClientValidator extends AbstractCreateOrUpdateValidat
     @Override
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         super.validate(target, errors);
+
+        final Client client = (Client) target;
+
+        if (!this.validateUnique(client, errors)) {
+            return;
+        }
     }
 
     @Override
