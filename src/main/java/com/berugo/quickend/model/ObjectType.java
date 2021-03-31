@@ -9,6 +9,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 
 @Data
 @SuperBuilder
@@ -19,5 +20,6 @@ public class ObjectType extends AbstractModel {
 
     @Type(type = "json")
     @Column(columnDefinition = "json")
+    @Lob
     private Schema schema;
 }

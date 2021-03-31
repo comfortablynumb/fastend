@@ -14,6 +14,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.MongoDBContainer;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -21,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 @AutoConfigureMockMvc
 @Import({AbstractIntegrationTest.TestConfig.class})
 public abstract class AbstractIntegrationTest {
+
+    private static MongoDBContainer mongoDbContainer;
 
     @Autowired
     protected MockMvc mockMvc;
@@ -37,6 +42,14 @@ public abstract class AbstractIntegrationTest {
 
             return null;
         }
+    }
+
+    public static void startMongoContainer() {
+        mongoDbContainer = new MongoDBContainer("mongo:4.4.4-bionic");
+
+        mongoDbContainer.setPortBindings(Arrays.asList("37017:27017"));
+
+        mongoDbContainer.start();
     }
 
 

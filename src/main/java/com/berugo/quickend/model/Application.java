@@ -22,7 +22,7 @@ public class Application extends AbstractModel {
 
     @Builder.Default
     @Type(type = "json")
-    @Column(columnDefinition = "VARCHAR(1000)")
+    @Column(columnDefinition = "VARCHAR(1000)", length = 1000)
     private Set<String> availableLocales = new HashSet<>();
 
 }

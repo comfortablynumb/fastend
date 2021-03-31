@@ -1,5 +1,6 @@
-package com.berugo.quickend.integration.mongo;
+package com.berugo.quickend.integration;
 
+import com.berugo.quickend.AbstractIntegrationTest;
 import com.berugo.quickend.model.Application;
 import com.berugo.quickend.testutils.ValidationError;
 import com.berugo.quickend.validator.AbstractValidator;
@@ -18,7 +19,7 @@ import java.util.List;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ApplicationTests extends AbstractMongoTest {
+public abstract class AbstractApplicationTests extends AbstractIntegrationTest {
     @BeforeEach
     public void setUp() {
         // Clean up before each test runs, just to be sure
@@ -49,8 +50,8 @@ public class ApplicationTests extends AbstractMongoTest {
         this.postApplicationAndVerifySuccess(app);
 
         this.postApplicationAndVerifyValidationErrors(
-            app,
-            Arrays.asList(new ValidationError("externalId", AbstractValidator.ERROR_CODE_ALREADY_EXISTS))
+                app,
+                Arrays.asList(new ValidationError("externalId", AbstractValidator.ERROR_CODE_ALREADY_EXISTS))
         );
     }
 
@@ -98,33 +99,33 @@ public class ApplicationTests extends AbstractMongoTest {
 
     protected Application createApplicationModel() {
         return Application.builder()
-            .externalId("some-app")
-            .defaultLocale("en_US")
-            .build();
+                .externalId("some-app")
+                .defaultLocale("en_US")
+                .build();
     }
 
     protected void postApplicationAndVerifySuccess(final Application app) throws Exception {
         final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-            .post("/api/application")
-            .content(this.toJson(app))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated())
-        ;
+                .post("/api/application")
+                .content(this.toJson(app))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                ;
 
         this.verifySuccessfulResponseFields(app, resultActions);
     }
 
     protected void postApplicationAndVerifyValidationErrors(
-        final Application app,
-        final List<ValidationError> expectedErrors
+            final Application app,
+            final List<ValidationError> expectedErrors
     ) throws Exception {
         final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.post("/api/application")
-            .content(this.toJson(app))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-        ;
+                .content(this.toJson(app))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                ;
 
         for (final ValidationError expectedError : expectedErrors) {
             resultActions.andExpect(jsonPath("$.errors[?(@.field == \"" + expectedError.getField() + "\" && @.errorType == \"" + expectedError.getErrorType() + "\")]").exists());
@@ -133,39 +134,39 @@ public class ApplicationTests extends AbstractMongoTest {
 
     protected void putApplicationAndVerifySuccess(final Application app) throws Exception {
         final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-            .put("/api/application/" + app.getExternalId())
-            .content(this.toJson(app))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-        ;
+                .put("/api/application/" + app.getExternalId())
+                .content(this.toJson(app))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                ;
 
         this.verifySuccessfulResponseFields(app, resultActions);
     }
 
     protected void deleteApplicationAndVerifySuccess(final Application app) throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders
-            .delete("/api/application/" + app.getExternalId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNoContent())
+                .delete("/api/application/" + app.getExternalId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
         ;
     }
 
     protected void getOneApplicationAndVerifySuccess(final Application app) throws Exception {
         final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-            .get("/api/application/" + app.getExternalId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-        ;
+                .get("/api/application/" + app.getExternalId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                ;
 
         this.verifySuccessfulResponseFields(app, resultActions);
     }
 
     protected void getOneApplicationAndVerifyNotFound(final Application app) throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders
-            .get("/api/application/" + app.getExternalId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound())
+                .get("/api/application/" + app.getExternalId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
         ;
     }
 
@@ -176,14 +177,12 @@ public class ApplicationTests extends AbstractMongoTest {
         app.getAvailableLocales().add(app.getDefaultLocale());
 
         resultActions
-            .andExpect(jsonPath("$.externalId").value(app.getExternalId()))
-            .andExpect(jsonPath("$.defaultLocale").value(app.getDefaultLocale()))
-            .andExpect(jsonPath("$.availableLocales").value(Matchers.hasSize(app.getAvailableLocales().size())))
-            .andExpect(jsonPath("$.availableLocales").value(Matchers.containsInAnyOrder(app.getAvailableLocales().toArray())))
+                .andExpect(jsonPath("$.externalId").value(app.getExternalId()))
+                .andExpect(jsonPath("$.defaultLocale").value(app.getDefaultLocale()))
+                .andExpect(jsonPath("$.availableLocales").value(Matchers.hasSize(app.getAvailableLocales().size())))
+                .andExpect(jsonPath("$.availableLocales").value(Matchers.containsInAnyOrder(app.getAvailableLocales().toArray())))
         ;
     }
 
-    protected void cleanUp() {
-        this.mongoTemplate.dropCollection("application");
-    }
+    protected abstract void cleanUp();
 }
