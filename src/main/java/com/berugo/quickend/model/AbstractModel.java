@@ -16,6 +16,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -37,6 +38,7 @@ public abstract class AbstractModel {
     @RestResource(exported = false)
     private String id;
 
+    @Column(length = 255)
     private String externalId;
 
     @CreatedDate

@@ -2,42 +2,42 @@ package com.berugo.quickend.integration;
 
 import com.berugo.quickend.AbstractIntegrationTest;
 import com.berugo.quickend.model.Application;
-import com.berugo.quickend.model.Client;
+import com.berugo.quickend.model.ObjectType;
 import com.berugo.quickend.testutils.ValidationError;
 import com.berugo.quickend.validator.AbstractValidator;
-import com.berugo.quickend.validator.CreateOrUpdateClientValidator;
+import com.berugo.quickend.validator.CreateOrUpdateObjectTypeValidator;
 import com.c4_soft.springaddons.security.oauth2.test.annotations.keycloak.WithMockKeycloakAuth;
 import com.google.common.base.Strings;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-public abstract class AbstractClientTests extends AbstractIntegrationTest {
+public abstract class AbstractObjectTypeTests extends AbstractIntegrationTest {
     @Test
     @WithMockKeycloakAuth(authorities = "user")
-    public void testPostClient() throws Exception {
+    public void testPostObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final Client client = this.createClientModel();
+        final ObjectType client = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
         client.setApplicationExternalId(app.getExternalId());
 
-        this.postClientAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(client);
     }
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
-    public void testPostClientValidationErrors() throws Exception {
+    public void testPostObjectTypeValidationErrors() throws Exception {
         final Application app = this.createApplicationModel();
-        final Client client = this.createClientModel();
+        final ObjectType client = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
         client.setApplicationExternalId(app.getExternalId());
         client.setExternalId(Strings.repeat("a", 256));
 
-        this.postClientAndVerifyValidationErrors(
+        this.postObjectTypeAndVerifyValidationErrors(
             client,
             Arrays.asList(new ValidationError(AbstractValidator.FIELD_EXTERNAL_ID, AbstractValidator.ERROR_CODE_INVALID_SIZE))
         );
@@ -45,28 +45,28 @@ public abstract class AbstractClientTests extends AbstractIntegrationTest {
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
-    public void testPostClientValidationErrors2() throws Exception {
-        final Client client = this.createClientModel();
+    public void testPostObjectTypeValidationErrors2() throws Exception {
+        final ObjectType client = this.createObjectTypeModel();
 
-        this.postClientAndVerifyValidationErrors(
+        this.postObjectTypeAndVerifyValidationErrors(
             client,
-            Arrays.asList(new ValidationError(CreateOrUpdateClientValidator.FIELD_APPLICATION_EXTERNAL_ID, AbstractValidator.ERROR_CODE_NOT_NULL_NOR_EMPTY))
+            Arrays.asList(new ValidationError(CreateOrUpdateObjectTypeValidator.FIELD_APPLICATION_EXTERNAL_ID, AbstractValidator.ERROR_CODE_NOT_NULL_NOR_EMPTY))
         );
     }
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
-    public void testPostClientFailsIfAlreadyExists() throws Exception {
+    public void testPostObjectTypeFailsIfAlreadyExists() throws Exception {
         final Application app = this.createApplicationModel();
-        final Client client = this.createClientModel();
+        final ObjectType client = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
         client.setApplicationExternalId(app.getExternalId());
 
-        this.postClientAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(client);
 
-        this.postClientAndVerifyValidationErrors(
+        this.postObjectTypeAndVerifyValidationErrors(
                 client,
             Arrays.asList(new ValidationError(AbstractValidator.FIELD_EXTERNAL_ID, AbstractValidator.ERROR_CODE_ALREADY_EXISTS))
         );
@@ -74,54 +74,54 @@ public abstract class AbstractClientTests extends AbstractIntegrationTest {
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
-    public void testGetOneClient() throws Exception {
+    public void testGetOneObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final Client client = this.createClientModel();
+        final ObjectType client = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
         client.setApplicationExternalId(app.getExternalId());
 
-        this.postClientAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(client);
 
-        this.getOneClientAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(client);
     }
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
-    public void testPutClient() throws Exception {
+    public void testPutObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final Client client = this.createClientModel();
+        final ObjectType client = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
         client.setApplicationExternalId(app.getExternalId());
 
-        this.postClientAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(client);
 
-        this.getOneClientAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(client);
 
-        this.putClientAndVerifySuccess(client);
+        this.putObjectTypeAndVerifySuccess(client);
 
-        this.getOneClientAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(client);
     }
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
-    public void testDeleteClient() throws Exception {
+    public void testDeleteObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final Client client = this.createClientModel();
+        final ObjectType client = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
         client.setApplicationExternalId(app.getExternalId());
 
-        this.postClientAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(client);
 
-        this.getOneClientAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(client);
 
-        this.deleteClientAndVerifySuccess(client);
+        this.deleteObjectTypeAndVerifySuccess(client);
 
-        this.getOneClientAndVerifyNotFound(client);
+        this.getOneObjectTypeAndVerifyNotFound(client);
     }
 }

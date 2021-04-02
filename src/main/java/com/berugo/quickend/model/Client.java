@@ -13,5 +13,5 @@ import javax.persistence.Entity;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 public class Client extends AbstractModel {
-    private String applicationId;
+    private String applicationExternalId;
 }

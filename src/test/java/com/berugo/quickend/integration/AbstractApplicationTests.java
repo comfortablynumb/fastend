@@ -5,17 +5,9 @@ import com.berugo.quickend.model.Application;
 import com.berugo.quickend.testutils.ValidationError;
 import com.berugo.quickend.validator.AbstractValidator;
 import com.c4_soft.springaddons.security.oauth2.test.annotations.keycloak.WithMockKeycloakAuth;
-import org.hamcrest.Matchers;
-
+import com.google.common.base.Strings;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.Arrays;
-import java.util.List;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public abstract class AbstractApplicationTests extends AbstractIntegrationTest {
     @Test
@@ -28,6 +20,19 @@ public abstract class AbstractApplicationTests extends AbstractIntegrationTest {
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
+    public void testPostApplicationValidationErrors() throws Exception {
+        final Application app = this.createApplicationModel();
+
+        app.setExternalId(Strings.repeat("a", 256));
+
+        this.postApplicationAndVerifyValidationErrors(
+            app,
+            Arrays.asList(new ValidationError(AbstractValidator.FIELD_EXTERNAL_ID, AbstractValidator.ERROR_CODE_INVALID_SIZE))
+        );
+    }
+
+    @Test
+    @WithMockKeycloakAuth(authorities = "user")
     public void testPostApplicationFailsIfAlreadyExists() throws Exception {
         final Application app = this.createApplicationModel();
 
@@ -35,7 +40,7 @@ public abstract class AbstractApplicationTests extends AbstractIntegrationTest {
 
         this.postApplicationAndVerifyValidationErrors(
             app,
-            Arrays.asList(new ValidationError("externalId", AbstractValidator.ERROR_CODE_ALREADY_EXISTS))
+            Arrays.asList(new ValidationError(AbstractValidator.FIELD_EXTERNAL_ID, AbstractValidator.ERROR_CODE_ALREADY_EXISTS))
         );
     }
 
@@ -77,92 +82,5 @@ public abstract class AbstractApplicationTests extends AbstractIntegrationTest {
         this.deleteApplicationAndVerifySuccess(app);
 
         this.getOneApplicationAndVerifyNotFound(app);
-    }
-
-    // Helper Methods
-
-    protected Application createApplicationModel() {
-        return Application.builder()
-            .externalId("some-app")
-            .defaultLocale("en_US")
-            .build();
-    }
-
-    protected void postApplicationAndVerifySuccess(final Application app) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-            .post("/api/application")
-            .content(this.toJson(app))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated())
-        ;
-
-        this.verifySuccessfulResponseFields(app, resultActions);
-    }
-
-    protected void postApplicationAndVerifyValidationErrors(
-        final Application app,
-        final List<ValidationError> expectedErrors
-    ) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.post("/api/application")
-            .content(this.toJson(app))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-        ;
-
-        this.assertResponseErrorsArePresent(resultActions, expectedErrors);
-    }
-
-    protected void putApplicationAndVerifySuccess(final Application app) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-            .put("/api/application/" + app.getExternalId())
-            .content(this.toJson(app))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-        ;
-
-        this.verifySuccessfulResponseFields(app, resultActions);
-    }
-
-    protected void deleteApplicationAndVerifySuccess(final Application app) throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders
-            .delete("/api/application/" + app.getExternalId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNoContent())
-        ;
-    }
-
-    protected void getOneApplicationAndVerifySuccess(final Application app) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
-            .get("/api/application/" + app.getExternalId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            ;
-
-        this.verifySuccessfulResponseFields(app, resultActions);
-    }
-
-    protected void getOneApplicationAndVerifyNotFound(final Application app) throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders
-            .get("/api/application/" + app.getExternalId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound())
-        ;
-    }
-
-    protected void verifySuccessfulResponseFields(final Application app, final ResultActions resultActions) throws Exception {
-        // NOTE: defaultLocale will be added to availableLocales implicitly after creating / updating the app.
-        //       Let's add it here so it matches correctly.
-
-        app.getAvailableLocales().add(app.getDefaultLocale());
-
-        resultActions
-            .andExpect(jsonPath("$.externalId").value(app.getExternalId()))
-            .andExpect(jsonPath("$.defaultLocale").value(app.getDefaultLocale()))
-            .andExpect(jsonPath("$.availableLocales").value(Matchers.hasSize(app.getAvailableLocales().size())))
-            .andExpect(jsonPath("$.availableLocales").value(Matchers.containsInAnyOrder(app.getAvailableLocales().toArray())))
-        ;
     }
 }

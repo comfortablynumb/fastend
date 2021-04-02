@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
@@ -18,8 +17,9 @@ import javax.persistence.Lob;
 @Entity
 public class ObjectType extends AbstractModel {
 
+    private String applicationExternalId;
+
     @Type(type = "json")
-    @Column(columnDefinition = "json")
     @Lob
     private Schema schema;
 }
