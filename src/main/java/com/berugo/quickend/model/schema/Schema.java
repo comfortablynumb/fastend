@@ -26,4 +26,8 @@ public class Schema {
 
         return this;
     }
+
+    public Field getField(final String fieldName) {
+        return this.fields.getOrDefault(fieldName, null);
+    }
 }

@@ -2,6 +2,7 @@ package com.berugo.quickend;
 
 import com.berugo.quickend.model.Application;
 import com.berugo.quickend.model.Client;
+import com.berugo.quickend.model.Object;
 import com.berugo.quickend.model.ObjectType;
 import com.berugo.quickend.model.schema.Field;
 import com.berugo.quickend.model.schema.FieldType;
@@ -30,7 +31,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.MongoDBContainer;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -314,9 +317,96 @@ public abstract class AbstractIntegrationTest {
         ;
     }
 
+    // :: Object
+
+    protected Object createObjectModel() {
+        final Map<String, java.lang.Object> objectData = new HashMap<>();
+
+        objectData.put("title", "Some Title");
+
+        return Object.builder()
+            .externalId("some-object")
+            .data(objectData)
+            .build();
+    }
+
+    protected void postObjectAndVerifySuccess(final Object object) throws Exception {
+        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+            .post("/api/object")
+            .content(this.toJson(object))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            ;
+
+        this.verifyObjectSuccessfulResponseFields(object, resultActions);
+    }
+
+    protected void postObjectAndVerifyValidationErrors(
+        final Object object,
+        final List<ValidationError> expectedErrors
+    ) throws Exception {
+        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.post("/api/object")
+            .content(this.toJson(object))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            ;
+
+        this.assertResponseErrorsArePresent(resultActions, expectedErrors);
+    }
+
+    protected void putObjectAndVerifySuccess(final Object object) throws Exception {
+        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+            .put("/api/object/" + object.getExternalId())
+            .content(this.toJson(object))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            ;
+
+        this.verifyObjectSuccessfulResponseFields(object, resultActions);
+    }
+
+    protected void deleteObjectAndVerifySuccess(final Object object) throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders
+            .delete("/api/object/" + object.getExternalId())
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent())
+        ;
+    }
+
+    protected void getOneObjectAndVerifySuccess(final Object object) throws Exception {
+        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders
+            .get("/api/object/" + object.getExternalId())
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            ;
+
+        this.verifyObjectSuccessfulResponseFields(object, resultActions);
+    }
+
+    protected void getOneObjectAndVerifyNotFound(final Object object) throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders
+            .get("/api/object/" + object.getExternalId())
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+        ;
+    }
+
+    protected void verifyObjectSuccessfulResponseFields(
+        final Object object,
+        final ResultActions resultActions
+    ) throws Exception {
+        resultActions
+            .andExpect(jsonPath("$.externalId").value(object.getExternalId()))
+            .andExpect(jsonPath("$.data[\"title\"]").value(object.getDataStringValue("title")))
+        ;
+    }
+
     // Utility Methods
 
-    protected String toJson(final Object obj) {
+    protected String toJson(final java.lang.Object obj) {
         try {
             return this.objectMapper.writeValueAsString(obj);
         } catch (final JsonProcessingException e) {

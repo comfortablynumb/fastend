@@ -17,28 +17,28 @@ public abstract class AbstractObjectTypeTests extends AbstractIntegrationTest {
     @WithMockKeycloakAuth(authorities = "user")
     public void testPostObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final ObjectType client = this.createObjectTypeModel();
+        final ObjectType objectType = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
-        client.setApplicationExternalId(app.getExternalId());
+        objectType.setApplicationExternalId(app.getExternalId());
 
-        this.postObjectTypeAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(objectType);
     }
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
     public void testPostObjectTypeValidationErrors() throws Exception {
         final Application app = this.createApplicationModel();
-        final ObjectType client = this.createObjectTypeModel();
+        final ObjectType objectType = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
-        client.setApplicationExternalId(app.getExternalId());
-        client.setExternalId(Strings.repeat("a", 256));
+        objectType.setApplicationExternalId(app.getExternalId());
+        objectType.setExternalId(Strings.repeat("a", 256));
 
         this.postObjectTypeAndVerifyValidationErrors(
-            client,
+            objectType,
             Arrays.asList(new ValidationError(AbstractValidator.FIELD_EXTERNAL_ID, AbstractValidator.ERROR_CODE_INVALID_SIZE))
         );
     }
@@ -46,10 +46,10 @@ public abstract class AbstractObjectTypeTests extends AbstractIntegrationTest {
     @Test
     @WithMockKeycloakAuth(authorities = "user")
     public void testPostObjectTypeValidationErrors2() throws Exception {
-        final ObjectType client = this.createObjectTypeModel();
+        final ObjectType objectType = this.createObjectTypeModel();
 
         this.postObjectTypeAndVerifyValidationErrors(
-            client,
+            objectType,
             Arrays.asList(new ValidationError(CreateOrUpdateObjectTypeValidator.FIELD_APPLICATION_EXTERNAL_ID, AbstractValidator.ERROR_CODE_NOT_NULL_NOR_EMPTY))
         );
     }
@@ -58,16 +58,16 @@ public abstract class AbstractObjectTypeTests extends AbstractIntegrationTest {
     @WithMockKeycloakAuth(authorities = "user")
     public void testPostObjectTypeFailsIfAlreadyExists() throws Exception {
         final Application app = this.createApplicationModel();
-        final ObjectType client = this.createObjectTypeModel();
+        final ObjectType objectType = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
-        client.setApplicationExternalId(app.getExternalId());
+        objectType.setApplicationExternalId(app.getExternalId());
 
-        this.postObjectTypeAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(objectType);
 
         this.postObjectTypeAndVerifyValidationErrors(
-                client,
+                objectType,
             Arrays.asList(new ValidationError(AbstractValidator.FIELD_EXTERNAL_ID, AbstractValidator.ERROR_CODE_ALREADY_EXISTS))
         );
     }
@@ -76,52 +76,52 @@ public abstract class AbstractObjectTypeTests extends AbstractIntegrationTest {
     @WithMockKeycloakAuth(authorities = "user")
     public void testGetOneObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final ObjectType client = this.createObjectTypeModel();
+        final ObjectType objectType = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
-        client.setApplicationExternalId(app.getExternalId());
+        objectType.setApplicationExternalId(app.getExternalId());
 
-        this.postObjectTypeAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(objectType);
 
-        this.getOneObjectTypeAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(objectType);
     }
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
     public void testPutObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final ObjectType client = this.createObjectTypeModel();
+        final ObjectType objectType = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
-        client.setApplicationExternalId(app.getExternalId());
+        objectType.setApplicationExternalId(app.getExternalId());
 
-        this.postObjectTypeAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(objectType);
 
-        this.getOneObjectTypeAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(objectType);
 
-        this.putObjectTypeAndVerifySuccess(client);
+        this.putObjectTypeAndVerifySuccess(objectType);
 
-        this.getOneObjectTypeAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(objectType);
     }
 
     @Test
     @WithMockKeycloakAuth(authorities = "user")
     public void testDeleteObjectType() throws Exception {
         final Application app = this.createApplicationModel();
-        final ObjectType client = this.createObjectTypeModel();
+        final ObjectType objectType = this.createObjectTypeModel();
 
         this.postApplicationAndVerifySuccess(app);
 
-        client.setApplicationExternalId(app.getExternalId());
+        objectType.setApplicationExternalId(app.getExternalId());
 
-        this.postObjectTypeAndVerifySuccess(client);
+        this.postObjectTypeAndVerifySuccess(objectType);
 
-        this.getOneObjectTypeAndVerifySuccess(client);
+        this.getOneObjectTypeAndVerifySuccess(objectType);
 
-        this.deleteObjectTypeAndVerifySuccess(client);
+        this.deleteObjectTypeAndVerifySuccess(objectType);
 
-        this.getOneObjectTypeAndVerifyNotFound(client);
+        this.getOneObjectTypeAndVerifyNotFound(objectType);
     }
 }
