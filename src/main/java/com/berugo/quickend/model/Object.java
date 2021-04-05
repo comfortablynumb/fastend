@@ -8,8 +8,8 @@ import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.Transient;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 
 import java.util.Map;
 
@@ -30,11 +30,15 @@ public class Object extends AbstractModel {
     private ObjectType objectType;
 
     @Type(type = "json")
-    @Lob
+    @Column(length=10240000)
     private Map<String, java.lang.Object> data;
 
 
     public String getDataStringValue(final String fieldName) {
         return (String) this.data.getOrDefault(fieldName, null);
+    }
+
+    public Boolean getDataBooleanValue(final String fieldName) {
+        return (Boolean) this.data.getOrDefault(fieldName, null);
     }
 }

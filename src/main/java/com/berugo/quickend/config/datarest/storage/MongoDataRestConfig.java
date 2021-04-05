@@ -21,19 +21,19 @@ public class MongoDataRestConfig extends CommonDataRestConfig implements Reposit
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
         config.withEntityLookup()
-                .forRepository(ApplicationRepository.class)
-                .withIdMapping(Application::getExternalId)
-                .withLookup(ApplicationRepository::findByExternalId);
+            .forRepository(ApplicationRepository.class)
+            .withIdMapping(Application::getExternalId)
+            .withLookup(ApplicationRepository::findByExternalId);
 
         config.withEntityLookup()
-                .forRepository(ClientRepository.class)
-                .withIdMapping(Client::getExternalId)
-                .withLookup(ClientRepository::findByExternalId);
+            .forRepository(ClientRepository.class)
+            .withIdMapping(Client::getExternalId)
+            .withLookup(ClientRepository::findByExternalId);
 
         config.withEntityLookup()
-                .forRepository(ObjectTypeRepository.class)
-                .withIdMapping(ObjectType::getExternalId)
-                .withLookup(ObjectTypeRepository::findByExternalId);
+            .forRepository(ObjectTypeRepository.class)
+            .withIdMapping(ObjectType::getExternalId)
+            .withLookup(ObjectTypeRepository::findByExternalId);
 
         config.withEntityLookup()
             .forRepository(ObjectRepository.class)

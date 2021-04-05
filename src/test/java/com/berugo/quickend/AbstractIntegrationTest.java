@@ -239,10 +239,15 @@ public abstract class AbstractIntegrationTest {
 
     protected ObjectType createObjectTypeModel() {
         final FieldType stringFieldType = FieldType.builder().externalId("string").build();
+        final FieldType booleanFieldType = FieldType.builder().externalId("boolean").build();
 
         return ObjectType.builder()
             .externalId("some-object-type")
-            .schema(Schema.builder().build().addField(Field.builder().name("title").type(stringFieldType).build()))
+            .schema(
+                Schema.builder().build()
+                .addField(Field.builder().name("title").type(stringFieldType).build())
+                .addField(Field.builder().name("active").type(booleanFieldType).build())
+            )
             .build();
     }
 
@@ -323,6 +328,7 @@ public abstract class AbstractIntegrationTest {
         final Map<String, java.lang.Object> objectData = new HashMap<>();
 
         objectData.put("title", "Some Title");
+        objectData.put("active", true);
 
         return Object.builder()
             .externalId("some-object")
@@ -401,6 +407,7 @@ public abstract class AbstractIntegrationTest {
         resultActions
             .andExpect(jsonPath("$.externalId").value(object.getExternalId()))
             .andExpect(jsonPath("$.data[\"title\"]").value(object.getDataStringValue("title")))
+            .andExpect(jsonPath("$.data[\"active\"]").value(object.getDataBooleanValue("active")))
         ;
     }
 
