@@ -21,7 +21,7 @@ public class FieldType {
     private boolean searchable = false;
 
     @Builder.Default
-    private boolean translatable = false;
+    private boolean localizable = false;
 
     private Integer min;
 

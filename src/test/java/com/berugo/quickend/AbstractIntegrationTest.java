@@ -72,10 +72,14 @@ public abstract class AbstractIntegrationTest {
     // :: Application
 
     protected Application createApplicationModel() {
-        return Application.builder()
+        final Application app = Application.builder()
             .externalId("some-app")
             .defaultLocale("en_US")
             .build();
+
+        app.addAvailableLocale("es_AR");
+
+        return app;
     }
 
     protected void postApplicationAndVerifySuccess(final Application app) throws Exception {
@@ -239,6 +243,7 @@ public abstract class AbstractIntegrationTest {
 
     protected ObjectType createObjectTypeModel() {
         final FieldType stringFieldType = FieldType.builder().externalId("string").build();
+        final FieldType localizableStringFieldType = FieldType.builder().externalId("string").localizable(true).build();
         final FieldType booleanFieldType = FieldType.builder().externalId("boolean").build();
 
         return ObjectType.builder()
@@ -246,6 +251,7 @@ public abstract class AbstractIntegrationTest {
             .schema(
                 Schema.builder().build()
                 .addField(Field.builder().name("title").type(stringFieldType).build())
+                .addField(Field.builder().name("localizableTitle").type(localizableStringFieldType).build())
                 .addField(Field.builder().name("active").type(booleanFieldType).build())
             )
             .build();
@@ -326,13 +332,21 @@ public abstract class AbstractIntegrationTest {
 
     protected Object createObjectModel() {
         final Map<String, java.lang.Object> objectData = new HashMap<>();
+        final Map<String, Map<String, java.lang.Object>> objectLocalizableData = new HashMap<>();
 
         objectData.put("title", "Some Title");
         objectData.put("active", true);
 
+        objectLocalizableData.put("en_US", new HashMap<>());
+        objectLocalizableData.put("es_AR", new HashMap<>());
+
+        objectLocalizableData.get("en_US").put("localizableTitle", "English Title");
+        objectLocalizableData.get("es_AR").put("localizableTitle", "Título en Español");
+
         return Object.builder()
             .externalId("some-object")
             .data(objectData)
+            .localizableData(objectLocalizableData)
             .build();
     }
 
@@ -408,6 +422,8 @@ public abstract class AbstractIntegrationTest {
             .andExpect(jsonPath("$.externalId").value(object.getExternalId()))
             .andExpect(jsonPath("$.data[\"title\"]").value(object.getDataStringValue("title")))
             .andExpect(jsonPath("$.data[\"active\"]").value(object.getDataBooleanValue("active")))
+            .andExpect(jsonPath("$.localizableData[\"en_US\"][\"localizableTitle\"]").value(object.getLocalizableDataValue("en_US", "localizableTitle")))
+            .andExpect(jsonPath("$.localizableData[\"es_AR\"][\"localizableTitle\"]").value(object.getLocalizableDataValue("es_AR", "localizableTitle")))
         ;
     }
 

@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @SuperBuilder
@@ -29,5 +26,26 @@ public class Schema {
 
     public Field getField(final String fieldName) {
         return this.fields.getOrDefault(fieldName, null);
+    }
+
+    public boolean areAllRequiredNonLocalizableFieldsPresent(final Set<String> fields) {
+        return this.areAllRequiredFieldsPresent(fields, false);
+    }
+
+    public boolean areAllRequiredLocalizableFieldsPresent(final Set<String> fields) {
+        return this.areAllRequiredFieldsPresent(fields, true);
+    }
+    public boolean areAllRequiredFieldsPresent(final Set<String> fields, final boolean localizable) {
+        for (final Field field : this.fields.values()) {
+            if (field.getType().isLocalizable() != localizable) {
+                continue;
+            }
+
+            if (!field.getType().isNullable() && !fields.contains(field.getName())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

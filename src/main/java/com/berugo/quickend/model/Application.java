@@ -25,4 +25,18 @@ public class Application extends AbstractModel {
     @Column(columnDefinition = "VARCHAR(1000)", length = 1000)
     private Set<String> availableLocales = new HashSet<>();
 
+
+    public boolean supportsLocale(final String locale) {
+        for (final String appLocale : this.availableLocales) {
+            if (appLocale.equals(locale)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void addAvailableLocale(final String locale) {
+        this.availableLocales.add(locale);
+    }
 }

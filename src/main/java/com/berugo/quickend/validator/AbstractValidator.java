@@ -102,6 +102,12 @@ public abstract class AbstractValidator<M extends AbstractModel> implements Vali
     }
 
     protected void addError(final String field, final String code, final Errors errors) {
+        if (field == null) {
+            errors.reject(code, this.getErrorMessageCode(field, code));
+
+            return;
+        }
+
         errors.rejectValue(field, code, this.getErrorMessageCode(field, code));
     }
 
