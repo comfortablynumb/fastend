@@ -6,8 +6,8 @@ import com.berugo.quickend.model.schema.Field;
 import com.berugo.quickend.repository.AbstractModelRepository;
 import com.berugo.quickend.repository.BaseApplicationRepository;
 import com.berugo.quickend.repository.BaseObjectTypeRepository;
-import com.berugo.quickend.schema.fieldtype.AbstractFieldType;
-import com.berugo.quickend.service.FieldTypeService;
+import com.berugo.quickend.schema.fieldtype.validator.AbstractFieldTypeValidator;
+import com.berugo.quickend.service.FieldTypeValidatorService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class CreateOrUpdateObjectTypeValidator extends AbstractCreateOrUpdateVal
 
 
     @Autowired
-    private FieldTypeService fieldTypeService;
+    private FieldTypeValidatorService fieldTypeService;
 
     @Autowired
     private BaseApplicationRepository applicationRepository;
@@ -92,7 +92,7 @@ public class CreateOrUpdateObjectTypeValidator extends AbstractCreateOrUpdateVal
                 return false;
             }
 
-            final AbstractFieldType fieldType = this.fieldTypeService.getFieldType(field.getValue().getType().getExternalId());
+            final AbstractFieldTypeValidator fieldType = this.fieldTypeService.getFieldTypeValidator(field.getValue().getType().getExternalId());
 
             if (fieldType == null) {
                 errors.rejectValue(

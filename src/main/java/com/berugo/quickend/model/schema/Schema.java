@@ -28,24 +28,26 @@ public class Schema {
         return this.fields.getOrDefault(fieldName, null);
     }
 
-    public boolean areAllRequiredNonLocalizableFieldsPresent(final Set<String> fields) {
-        return this.areAllRequiredFieldsPresent(fields, false);
+    public Set<String> getMissingNonLocalizableFieldNames(final Set<String> fields) {
+        return this.getMissingFieldNames(fields, false);
     }
 
-    public boolean areAllRequiredLocalizableFieldsPresent(final Set<String> fields) {
-        return this.areAllRequiredFieldsPresent(fields, true);
+    public Set<String> getMissingLocalizableFieldNames(final Set<String> fields) {
+        return this.getMissingFieldNames(fields, true);
     }
-    public boolean areAllRequiredFieldsPresent(final Set<String> fields, final boolean localizable) {
+    public Set<String> getMissingFieldNames(final Set<String> fields, final boolean localizable) {
+        final Set<String> missingFields = new HashSet<>();
+
         for (final Field field : this.fields.values()) {
-            if (field.getType().isLocalizable() != localizable) {
+            if (field.getType().isNullable() || field.getType().isLocalizable() != localizable) {
                 continue;
             }
 
-            if (!field.getType().isNullable() && !fields.contains(field.getName())) {
-                return false;
+            if (!fields.contains(field.getName())) {
+                missingFields.add(field.getName());
             }
         }
 
-        return true;
+        return missingFields;
     }
 }

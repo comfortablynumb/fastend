@@ -1,9 +1,9 @@
-package com.berugo.quickend.schema.fieldtype;
+package com.berugo.quickend.schema.fieldtype.validator;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class StringFieldType extends AbstractFieldType {
+public class StringFieldTypeValidator extends AbstractFieldTypeValidator {
     public static final String FIELD_TYPE_EXTERNAL_ID = "string";
 
 

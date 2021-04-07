@@ -1,9 +1,9 @@
-package com.berugo.quickend.schema.fieldtype;
+package com.berugo.quickend.schema.fieldtype.validator;
 
 import lombok.NonNull;
 import org.springframework.validation.Errors;
 
-public abstract class AbstractFieldType {
+public abstract class AbstractFieldTypeValidator {
     public static final String ERROR_INVALID_VALUE_TYPE = "invalid_value_type";
 
 

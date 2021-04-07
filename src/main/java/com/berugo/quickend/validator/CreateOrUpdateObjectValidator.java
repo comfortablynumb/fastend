@@ -8,7 +8,8 @@ import com.berugo.quickend.repository.AbstractModelRepository;
 import com.berugo.quickend.repository.BaseApplicationRepository;
 import com.berugo.quickend.repository.BaseObjectRepository;
 import com.berugo.quickend.repository.BaseObjectTypeRepository;
-import com.berugo.quickend.service.FieldTypeService;
+import com.berugo.quickend.schema.fieldtype.validator.AbstractFieldTypeValidator;
+import com.berugo.quickend.service.FieldTypeValidatorService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,16 +28,15 @@ public class CreateOrUpdateObjectValidator extends AbstractCreateOrUpdateValidat
 
     public static final String ERROR_INVALID_OBJECT_TYPE_APPLICATION = "invalid_object_type_application";
     public static final String ERROR_INVALID_OBJECT_TYPE = "invalid_object_type";
+    public static final String ERROR_INVALID_FIELD_TYPE = "invalid_field_type";
     public static final String ERROR_UNSUPPORTED_LOCALE = "unsupported_locale";
     public static final String ERROR_UNEXPECTED_FIELD = "unexpected_field_name";
     public static final String ERROR_FIELD_MUST_NOT_BE_LOCALIZABLE = "field_must_not_be_localizable";
     public static final String ERROR_FIELD_MUST_BE_LOCALIZABLE = "field_must_localizable";
-    public static final String ERROR_MISSING_LOCALIZABLE_FIELDS = "missing_localizable_fields";
-    public static final String ERROR_MISSING_NON_LOCALIZABLE_FIELDS = "missing_non_localizable_fields";
 
 
     @Autowired
-    private FieldTypeService fieldTypeService;
+    private FieldTypeValidatorService fieldTypeValidatorService;
 
     @Autowired
     private BaseApplicationRepository applicationRepository;
@@ -122,11 +122,11 @@ public class CreateOrUpdateObjectValidator extends AbstractCreateOrUpdateValidat
         }
 
         // Verify if any required field is missing
-        //
-        // @TODO: Tune this validation
 
-        if (!objectType.getSchema().areAllRequiredNonLocalizableFieldsPresent(processedFields)) {
-            this.addError(null, ERROR_MISSING_NON_LOCALIZABLE_FIELDS, errors);
+        final Set<String> missingFields = objectType.getSchema().getMissingNonLocalizableFieldNames(processedFields);
+
+        for (final String missingField : missingFields) {
+            this.addError(FIELD_DATA_NAME + "[" + missingField + "]", ERROR_CODE_NOT_NULL, errors);
         }
 
         return errors.hasErrors();
@@ -143,7 +143,7 @@ public class CreateOrUpdateObjectValidator extends AbstractCreateOrUpdateValidat
                 final String locale = localeEntry.getKey();
 
                 if (!application.supportsLocale(locale)) {
-                    this.addError("localizableData", ERROR_UNSUPPORTED_LOCALE, errors);
+                    this.addError(FIELD_LOCALIZABLE_DATA_NAME, ERROR_UNSUPPORTED_LOCALE, errors);
 
                     continue;
                 }
@@ -163,11 +163,12 @@ public class CreateOrUpdateObjectValidator extends AbstractCreateOrUpdateValidat
         }
 
         // Verify if any required field is missing
-        //
-        // @TODO: Tune this validation
 
-        if (!objectType.getSchema().areAllRequiredLocalizableFieldsPresent(processedFields)) {
-            this.addError(null, ERROR_MISSING_LOCALIZABLE_FIELDS, errors);
+        final Set<String> missingFields = objectType.getSchema().getMissingLocalizableFieldNames(processedFields);
+        final String missingFieldKeyPrefix = FIELD_LOCALIZABLE_DATA_NAME + "[" + application.getDefaultLocale() + "]";
+
+        for (final String missingField : missingFields) {
+            this.addError(missingFieldKeyPrefix + "[" + missingField + "]", ERROR_CODE_NOT_NULL, errors);
         }
 
         return errors.hasErrors();
@@ -209,6 +210,18 @@ public class CreateOrUpdateObjectValidator extends AbstractCreateOrUpdateValidat
         // Validate not null
 
         if (!field.getType().isNullable() && !this.validateNotNull(fieldPath, fieldValue, errors)) {
+            return;
+        }
+
+        // Validate field's type
+
+        final AbstractFieldTypeValidator fieldTypeValidator = this.fieldTypeValidatorService.getFieldTypeValidator(
+            field.getType().getExternalId()
+        );
+
+        if (!fieldTypeValidator.isValidValue(fieldValue)) {
+            this.addError(fieldPath, ERROR_INVALID_FIELD_TYPE, errors);
+
             return;
         }
     }
